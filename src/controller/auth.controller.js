@@ -31,7 +31,7 @@ export const Signup = async (req, res) => {
 			await db.UserLogin.create({ user_id, token, login_at, expires_at });
 			response.access_token = token;
 		} catch (err) {
-			/*  */
+			res.status(400).json({ message: "Token Creation failed" });
 		}
 		res.status(201).json({ data: response, is_success: true });
 	} catch (err) {
@@ -60,6 +60,13 @@ export const Login = async (req, res) => {
 		const login_at = moment.utc();
 		const expires_at = moment.utc().add(7, 'days');
 		const token = GetRandomString(16);
+
+		const loggedIn = await db.UserLogin.findOne({ where: { user_id: user.id } });
+
+		if (loggedIn) {
+			return res.status(400).json({ message: "User is Already Logged In" })
+		}
+
 		await db.UserLogin.create({ user_id: user.id, token, login_at, expires_at });
 		return res.status(200).json({
 			message: 'User Logged In Successfully',

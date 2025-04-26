@@ -17,5 +17,5 @@ try {
 		});
 	});
 } catch (error) {
-	console.log('server dailed to start');
+	console.log('server failed to start');
 }
