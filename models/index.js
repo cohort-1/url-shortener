@@ -3,6 +3,8 @@ import { fileURLToPath } from 'url';
 import Sequelize from 'sequelize';
 import process from 'process';
 import UserModel from './User.js';
+import UrlModel from './Url.js';
+import ExpiredUrlModel from './ExpiredUrl.js';
 
 // Required for __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -25,9 +27,13 @@ if (config.use_env_variable) {
 }
 
 const User = UserModel(sequelize);
+const Url = UrlModel(sequelize);
+const ExpiredUrl = ExpiredUrlModel(sequelize);
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 db.User = User;
+db.Url = Url;
+db.ExpiredUrl = ExpiredUrl;
 
 export default db;

@@ -6,7 +6,7 @@ import db from './models/index.js';
 await db.sequelize.authenticate();
 console.log('Database connected.');
 
-await db.sequelize.sync({ alter: true });
+await db.sequelize.sync({ force: true });
 console.log('Tables synced.');
 
 const app = express();
