@@ -3,6 +3,7 @@ import db from '../models/index.js';
 import { emailRegex, GetRandomString } from '../utils/index.js';
 import moment from 'moment';
 import nodemailer from 'nodemailer';
+import { Op } from 'sequelize';
 /* signup */
 export const Signup = async (req, res) => {
 	try {
@@ -128,9 +129,31 @@ export const ForgetPasswordRequest = async (req, res) => {
 	}
 };
 
-export const ForgretPasswordReset = (req, res) => {
-	try {
-	} catch (err) {
+export const ForgretPasswordReset = async (req, res) => {
+		try {
+			const { token } = req.params;
+	
+			const { newPassword } = req.body;
+	
+			const user = await db.User.findOne({
+				where:{
+					reset_password_expiry:{
+						[Op.gt]:moment.utc(),
+					},
+					reset_password_token:token
+				}		
+				})	
+			console.log(user);
+			user.password = newPassword;
+			user.resetPasswordToken = "";
+			user.resetPasswordExpires = "";
+			await user.save();
+			return res.status(200).json({
+				success: true,
+				message: "Password Reset Successfull"
+			})
+		}
+	catch (err) {
 		const status = err?.status || 500;
 		const message = err?.message || 'Something went wrong, pls try again shortly.';
 		res.status(status).json({ message });
