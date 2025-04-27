@@ -2,6 +2,7 @@ import { response } from 'express';
 import db from '../models/index.js';
 import { emailRegex, GetRandomString } from '../utils/index.js';
 import moment from 'moment';
+import nodemailer from 'nodemailer';
 /* signup */
 export const Signup = async (req, res) => {
 	try {
@@ -31,7 +32,7 @@ export const Signup = async (req, res) => {
 			await db.UserLogin.create({ user_id, token, login_at, expires_at });
 			response.access_token = token;
 		} catch (err) {
-			res.status(400).json({ message: "Token Creation failed" });
+			res.status(400).json({ message: 'Token Creation failed' });
 		}
 		res.status(201).json({ data: response, is_success: true });
 	} catch (err) {
@@ -64,7 +65,7 @@ export const Login = async (req, res) => {
 		const loggedIn = await db.UserLogin.findOne({ where: { user_id: user.id } });
 
 		if (loggedIn) {
-			return res.status(400).json({ message: "User is Already Logged In" })
+			return res.status(400).json({ message: 'User is Already Logged In' });
 		}
 
 		await db.UserLogin.create({ user_id: user.id, token, login_at, expires_at });
@@ -82,9 +83,44 @@ export const Login = async (req, res) => {
 	}
 };
 /* forget password */
-export const ForgretPasswordRequest = (req, res) => {
+export const ForgetPasswordRequest = async (req, res) => {
 	try {
-		/*  */
+		const { email } = req.body;
+		const user = await db.User.findOne({ where: { email } });
+		if (!user) {
+			return res.status(401).json({
+				success: 'false',
+				message: 'User not found',
+			});
+		}
+
+		const token = GetRandomString(16);
+		user.reset_password_token = token;
+		user.reset_password_expiry = moment.utc().add('10', 'minutes');
+		await user.save();
+
+		const transporter = nodemailer.createTransport({
+			host: process.env.MAILTRAP_HOST,
+			port: process.env.MAILTRAP_PORT,
+			auth: {
+				user: process.env.MAILTRAP_USER,
+				pass: process.env.MAILTRAP_PASSWORD,
+			},
+		});
+
+		const options = {
+			from: process.env.MAILTRAP_SENDERMAIL, // sender address
+			to: user.email,
+			subject: 'Hello ✔', // Subject line
+			text: `
+			Please click on the following link:
+			${process.env.BASE_URL}/auth/reset/${token}
+			`,
+		};
+
+		await transporter.sendMail(options);
+
+		return res.status(200).json({ message: 'Check Your Email' });
 	} catch (err) {
 		const status = err?.status || 500;
 		const message = err?.message || 'Something went wrong, pls try again shortly.';
@@ -94,7 +130,6 @@ export const ForgretPasswordRequest = (req, res) => {
 
 export const ForgretPasswordReset = (req, res) => {
 	try {
-		/*  */
 	} catch (err) {
 		const status = err?.status || 500;
 		const message = err?.message || 'Something went wrong, pls try again shortly.';

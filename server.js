@@ -1,7 +1,8 @@
 /* entry file */
 import db from './src/models/index.js';
 import app from './src/app.js';
-
+import dotenv from 'dotenv'
+dotenv.config();
 const port = process.env.port;
 
 if (!port) {
@@ -13,7 +14,7 @@ try {
 	// db.sequelize.authenticate().then(() => {
 	db.sequelize.sync({ alter: true }).then(() => {
 		app.listen(port, () => {
-			console.log(`URL shortener service is runnig on port ${port}`);
+			console.log(`URL shortener service is running on port ${port}`);
 		});
 	});
 } catch (error) {

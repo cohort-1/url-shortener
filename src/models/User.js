@@ -37,6 +37,12 @@ export default (sequelize) => {
 				type: DataTypes.BOOLEAN,
 				defaultValue: false,
 			},
+			reset_password_token: {
+				type: DataTypes.STRING
+			},
+			reset_password_expiry: {
+				type: DataTypes.DATE
+			}
 		},
 		{
 			tableName: 'users',
