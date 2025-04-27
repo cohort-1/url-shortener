@@ -3,6 +3,7 @@ import db from '../models/index.js';
 import { emailRegex, GetRandomString } from '../utils/index.js';
 import moment from 'moment';
 import nodemailer from 'nodemailer';
+import bcrypt from "bcryptjs";
 import { Op } from 'sequelize';
 /* signup */
 export const Signup = async (req, res) => {
@@ -46,19 +47,17 @@ export const Signup = async (req, res) => {
 export const Login = async (req, res) => {
 	try {
 		const { email, password } = req.body;
-
 		if (!email || !password) {
 			throw { status: 400, message: 'Enter all the required Details' };
 		}
-
 		const user = await db.User.findOne({ where: { email } });
 		if (!user) {
 			throw { status: 401, message: 'Invalid Credentials' };
 		}
-
-		if (user.password != password) {
+		const matchedPassword= await bcrypt.compare(password,user.password);
+		if (matchedPassword==false) {
 			throw { status: 401, message: 'Invalid Credentials' };
-		}
+		}		
 		const login_at = moment.utc();
 		const expires_at = moment.utc().add(7, 'days');
 		const token = GetRandomString(16);
@@ -133,7 +132,7 @@ export const ForgretPasswordReset = async (req, res) => {
 		try {
 			const { token } = req.params;
 	
-			const { newPassword } = req.body;
+			const { new_password } = req.body;
 	
 			const user = await db.User.findOne({
 				where:{
@@ -144,7 +143,7 @@ export const ForgretPasswordReset = async (req, res) => {
 				}		
 				})	
 			console.log(user);
-			user.password = newPassword;
+			user.password = new_password;
 			user.resetPasswordToken = "";
 			user.resetPasswordExpires = "";
 			await user.save();

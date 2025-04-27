@@ -1,5 +1,5 @@
 import { DataTypes, Sequelize } from 'sequelize';
-
+import Userhooks from "../hooks/user_hooks.js"
 export default (sequelize) => {
 	const User = sequelize.define(
 		'User',
@@ -51,5 +51,6 @@ export default (sequelize) => {
 			updatedAt: 'updated_at',
 		}
 	);
+	Userhooks(User);
 	return User;
 };
