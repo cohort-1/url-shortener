@@ -23,14 +23,14 @@ export default {
 				type: Sequelize.STRING(255),
 				allowNull: false,
 			},
-      login_at: {
+      		login_at: {
 				type: Sequelize.DATE,
 				allowNull: false,
 			},
 			expires_at: {
 				type: Sequelize.DATE,
 				allowNull: false,
-        comment: `date when user's login is suppoed to expire`
+        		comment: `date when user's login is suppoed to expire`
 			},
 			created_at: {
 				type: Sequelize.DATE,

@@ -2,7 +2,7 @@
 import db from './src/models/index.js';
 import app from './src/app.js';
 
-const port = process.env.port;
+const port = process.env.PORT;
 
 if (!port) {
 	console.log('Please define a port before running')
