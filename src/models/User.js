@@ -24,7 +24,7 @@ export default (sequelize) => {
 				unique: true,
 			},
 			password: {
-				type: DataTypes.STRING(24),
+				type: DataTypes.STRING(120),
 				allowNull: false,
 			},
 			phone_number: {
