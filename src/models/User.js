@@ -1,5 +1,5 @@
 import { DataTypes, Sequelize } from 'sequelize';
-
+import Userhooks from "../hooks/user_hooks.js"
 export default (sequelize) => {
 	const User = sequelize.define(
 		'User',
@@ -24,7 +24,7 @@ export default (sequelize) => {
 				unique: true,
 			},
 			password: {
-				type: DataTypes.STRING(24),
+				type: DataTypes.STRING(120),
 				allowNull: false,
 			},
 			phone_number: {
@@ -37,6 +37,12 @@ export default (sequelize) => {
 				type: DataTypes.BOOLEAN,
 				defaultValue: false,
 			},
+			reset_password_token: {
+				type: DataTypes.STRING
+			},
+			reset_password_expiry: {
+				type: DataTypes.DATE
+			}
 		},
 		{
 			tableName: 'users',
@@ -45,5 +51,6 @@ export default (sequelize) => {
 			updatedAt: 'updated_at',
 		}
 	);
+	Userhooks(User);
 	return User;
 };
