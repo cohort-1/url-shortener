@@ -5,6 +5,8 @@ import moment from 'moment';
 import nodemailer from 'nodemailer';
 import bcrypt from "bcryptjs";
 import { Op } from 'sequelize';
+
+
 /* signup */
 export const Signup = async (req, res) => {
 	try {
@@ -19,11 +21,16 @@ export const Signup = async (req, res) => {
 		if (!emailRegex.test(email)) {
 			throw { status: 400, message: `Enter a valid email address` };
 		}
+
 		/* validate if user with same email already exists */
 		const exists = await db.User.findOne({ raw: true, where: { email } });
 		if (exists) {
 			throw { status: 409, message: `Account with this email already exists` };
 		}
+
+		// TODO: hash-password
+
+		// insert
 		const user = await db.User.create({ first_name, last_name, email, password, phone });
 		const user_id = user.id;
 		let response = { id: user_id };
@@ -43,6 +50,8 @@ export const Signup = async (req, res) => {
 		res.status(status).json({ message });
 	}
 };
+
+
 /* login */
 export const Login = async (req, res) => {
 	try {
@@ -54,6 +63,7 @@ export const Login = async (req, res) => {
 		if (!user) {
 			throw { status: 401, message: 'Invalid Credentials' };
 		}
+
 		const matchedPassword= await bcrypt.compare(password,user.password);
 		if (matchedPassword==false) {
 			throw { status: 401, message: 'Invalid Credentials' };
@@ -82,6 +92,7 @@ export const Login = async (req, res) => {
 		res.status(status).json({ message });
 	}
 };
+
 /* forget password */
 export const ForgetPasswordRequest = async (req, res) => {
 	try {
