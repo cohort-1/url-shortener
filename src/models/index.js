@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import Sequelize from 'sequelize';
 import process from 'process';
 import UserModel from './User.js';
+import UserLoginModel from './UserLogin.js';
 import UrlModel from './Url.js';
 import ExpiredUrlModel from './ExpiredUrl.js';
 
