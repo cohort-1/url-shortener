@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
 		const exists = await db.Url.findOne({ where: { og_url }, raw: true });
 		if (exists) {
 			// 	throw { status: 400, message: `Already exists` };
-			return res.send({ data: { url: exists.url } });
+			return res.send({ data: { url: `${process.env.BASE_URL}/${exists.url}` } });
 		}
 		let url = GetRandomString(8);
 		let urlExists = await db.Url.findOne({ where: { og_url }, raw: true });
@@ -25,6 +25,7 @@ router.post('/', async (req, res) => {
 			url = GetRandomString(8);
 			urlExists = await db.Url.findOne({ where: { og_url }, raw: true });
 		}
+		url = `${process.env.BASE_URL}/${url}`;
 		/* create  */
 		const expiry_date = moment.utc().add(7, 'days').format();
 		await db.Url.create({
