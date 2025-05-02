@@ -11,7 +11,8 @@ import { Op } from 'sequelize';
 export const Signup = async (req, res) => {
 	try {
 		const { first_name, last_name, email, password, phone } = req.body;
-		/* check empty fields */
+
+		// Check required fields
 		if (!password || !email) {
 			throw { status: 400, message: `Missing required params` };
 		}
@@ -22,28 +23,54 @@ export const Signup = async (req, res) => {
 			throw { status: 400, message: `Enter a valid email address` };
 		}
 
-		/* validate if user with same email already exists */
-		const exists = await db.User.findOne({ raw: true, where: { email } });
+		// Check if user with the same email already exists
+		const exists = await db.User.findOne({ where: { email } });
 		if (exists) {
 			throw { status: 409, message: `Account with this email already exists` };
 		}
 
-		// TODO: hash-password
+		// Hash the password
+		const hashedPassword = await bcrypt.hash(password, 10);
 
-		// insert
-		const user = await db.User.create({ first_name, last_name, email, password, phone });
+		// Create user
+		const user = await db.User.create({
+			first_name,
+			last_name,
+			email,
+			password: hashedPassword,
+			phone,
+		});
+
+		// console.log(user);
+
 		const user_id = user.id;
+		
 		let response = { id: user_id };
+
+		// Generate login token
 		try {
-			const login_at = moment.utc();
+			const login_at = moment.utc();	
 			const expires_at = login_at.clone().add(7, 'days');
 			const token = GetRandomString(16);
-			await db.UserLogin.create({ user_id, token, login_at, expires_at });
+
+			// console.log(`token: ${token}`);
+			
+			await db.UserLogin.create({
+				user_id,
+				token,
+				login_at,
+				expires_at,
+			});
+
 			response.access_token = token;
+
 		} catch (err) {
-			res.status(400).json({ message: 'Token Creation failed' });
+			return res.status(500).json({ message: 'Token creation failed' });
 		}
+
+		// Respond with success
 		res.status(201).json({ data: response, is_success: true });
+
 	} catch (err) {
 		const status = err?.status || 500;
 		const message = err?.message || 'Something went wrong, pls try again shortly.';
@@ -64,10 +91,11 @@ export const Login = async (req, res) => {
 			throw { status: 401, message: 'Invalid Credentials' };
 		}
 
-		const matchedPassword= await bcrypt.compare(password,user.password);
-		if (matchedPassword==false) {
+		const isMatchedPassword= await bcrypt.compare(password,user.password);
+		if (!isMatchedPassword) {
 			throw { status: 401, message: 'Invalid Credentials' };
-		}		
+		}	
+			
 		const login_at = moment.utc();
 		const expires_at = moment.utc().add(7, 'days');
 		const token = GetRandomString(16);
