@@ -11,16 +11,15 @@ export default (sequalise) => {
 				allowNull: false,
 			},
 			og_url: {
-				type: DataTypes.STRING,
+				type: DataTypes.STRING(65535),
 				allowNull: false,
 			},
 			url: {
-				type: DataTypes.STRING,
-				allowNull: false,
+				type: DataTypes.STRING(255),
 			},
 			expiry_date: {
 				type: DataTypes.DATE,
-				allowNull: false,
+				allowNull: true
 			},
 			user_id: {
 				type: DataTypes.INTEGER,
