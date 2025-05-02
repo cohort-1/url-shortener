@@ -37,6 +37,9 @@ export default {
 					key: 'id',
 				},
 			},
+			visits: {
+				type: Sequelize.INTEGER,
+			},
 		});
 	},
 

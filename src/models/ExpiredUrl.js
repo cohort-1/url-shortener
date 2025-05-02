@@ -29,6 +29,9 @@ export default (sequelize) => {
 					key: 'id',
 				},
 			},
+			visits: {
+				type: DataTypes.INTEGER,
+			},
 		},
 		{
 			tableName: 'expired_urls',
