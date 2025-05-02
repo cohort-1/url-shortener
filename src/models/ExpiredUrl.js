@@ -11,7 +11,7 @@ export default (sequelize) => {
 				allowNull: false,
 			},
 			og_url: {
-				type: DataTypes.STRING,
+				type: DataTypes.STRING(65535),
 				allowNull: false,
 			},
 			url: {
@@ -28,6 +28,9 @@ export default (sequelize) => {
 					model: 'users',
 					key: 'id',
 				},
+			},
+			visits: {
+				type: DataTypes.INTEGER,
 			},
 		},
 		{
