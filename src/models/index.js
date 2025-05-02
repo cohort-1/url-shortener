@@ -5,6 +5,7 @@ import process from 'process';
 import UserModel from './User.js';
 import UserLoginModel from './UserLogin.js';
 import Url from './Url.js';
+import ExpiredUrl from './ExpiredUrl.js';
 
 // Required for __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -34,5 +35,6 @@ db.Sequelize = Sequelize;
 db.User = User;
 db.UserLogin = UserLogin;
 db.Url=Url
+db.ExpiredUrl=ExpiredUrl;
 
 export default db;
